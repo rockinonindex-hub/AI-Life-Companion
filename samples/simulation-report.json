@@ -1,0 +1,203 @@
+{
+  "timezone": "Asia/Tokyo",
+  "node": "v24.19.0",
+  "reports": [
+    {
+      "days": 7,
+      "mode": "full",
+      "seed": 20261101,
+      "ms": 120,
+      "events": 112,
+      "retainedEvents": 112,
+      "cooking": 22,
+      "recipes": 14,
+      "results": {
+        "success": 18,
+        "unusual": 4,
+        "failure": 0
+      },
+      "substitutions": 8,
+      "shopping": 10,
+      "recipeCounts": {
+        "sweet_sour_pork": 2,
+        "pork_saute": 3,
+        "oyakodon": 1,
+        "egg_sandwich": 1,
+        "tofu_stir_fry": 1,
+        "fried_rice": 2,
+        "omurice": 1,
+        "nikujaga": 3,
+        "salmon_saute": 1,
+        "fruit_compote": 2,
+        "chicken_saute": 1,
+        "vegetable_soup": 1,
+        "tomato_pasta": 2,
+        "pancake": 1
+      },
+      "reproducible": true
+    },
+    {
+      "days": 7,
+      "mode": "compressed",
+      "seed": 20261101,
+      "ms": 50,
+      "events": 66,
+      "retainedEvents": 66,
+      "cooking": 12,
+      "recipes": 8,
+      "results": {
+        "success": 10,
+        "unusual": 1,
+        "failure": 1
+      },
+      "substitutions": 3,
+      "shopping": 6,
+      "recipeCounts": {
+        "pork_saute": 2,
+        "sweet_sour_pork": 1,
+        "fried_rice": 3,
+        "egg_sandwich": 2,
+        "vegetable_soup": 1,
+        "oyakodon": 1,
+        "tomato_pasta": 1,
+        "french_toast": 1
+      },
+      "reproducible": true
+    },
+    {
+      "days": 30,
+      "mode": "full",
+      "seed": 20261101,
+      "ms": 524,
+      "events": 480,
+      "retainedEvents": 480,
+      "cooking": 98,
+      "recipes": 19,
+      "results": {
+        "success": 92,
+        "unusual": 6,
+        "failure": 0
+      },
+      "substitutions": 33,
+      "shopping": 34,
+      "recipeCounts": {
+        "sweet_sour_pork": 2,
+        "pork_saute": 8,
+        "oyakodon": 4,
+        "egg_sandwich": 5,
+        "tofu_stir_fry": 6,
+        "fried_rice": 4,
+        "omurice": 4,
+        "nikujaga": 7,
+        "salmon_saute": 5,
+        "fruit_compote": 5,
+        "chicken_saute": 11,
+        "vegetable_soup": 5,
+        "tomato_pasta": 8,
+        "pancake": 6,
+        "french_toast": 6,
+        "potato_salad": 6,
+        "vegetable_stir_fry": 4,
+        "mushroom_pasta": 1,
+        "curry": 1
+      },
+      "reproducible": true
+    },
+    {
+      "days": 30,
+      "mode": "compressed",
+      "seed": 20261101,
+      "ms": 57,
+      "events": 104,
+      "retainedEvents": 104,
+      "cooking": 17,
+      "recipes": 9,
+      "results": {
+        "success": 16,
+        "unusual": 1,
+        "failure": 0
+      },
+      "substitutions": 6,
+      "shopping": 6,
+      "recipeCounts": {
+        "pork_saute": 3,
+        "omurice": 2,
+        "fried_rice": 4,
+        "oyakodon": 2,
+        "curry": 2,
+        "vegetable_stir_fry": 1,
+        "tomato_pasta": 1,
+        "nikujaga": 1,
+        "vegetable_soup": 1
+      },
+      "reproducible": true
+    },
+    {
+      "days": 180,
+      "mode": "full",
+      "seed": 20261101,
+      "ms": 9007,
+      "events": 2880,
+      "retainedEvents": 1800,
+      "cooking": 577,
+      "recipes": 20,
+      "results": {
+        "success": 563,
+        "unusual": 14,
+        "failure": 0
+      },
+      "substitutions": 185,
+      "shopping": 207,
+      "recipeCounts": {
+        "sweet_sour_pork": 22,
+        "pork_saute": 38,
+        "oyakodon": 28,
+        "egg_sandwich": 37,
+        "tofu_stir_fry": 32,
+        "fried_rice": 33,
+        "omurice": 29,
+        "nikujaga": 30,
+        "salmon_saute": 23,
+        "fruit_compote": 34,
+        "chicken_saute": 39,
+        "vegetable_soup": 22,
+        "tomato_pasta": 26,
+        "pancake": 30,
+        "french_toast": 33,
+        "potato_salad": 28,
+        "vegetable_stir_fry": 24,
+        "mushroom_pasta": 20,
+        "curry": 23,
+        "banana_yogurt": 26
+      },
+      "reproducible": true
+    },
+    {
+      "days": 180,
+      "mode": "compressed",
+      "seed": 20261101,
+      "ms": 93,
+      "events": 74,
+      "retainedEvents": 74,
+      "cooking": 13,
+      "recipes": 7,
+      "results": {
+        "success": 10,
+        "unusual": 3,
+        "failure": 0
+      },
+      "substitutions": 3,
+      "shopping": 6,
+      "recipeCounts": {
+        "sweet_sour_pork": 2,
+        "pork_saute": 2,
+        "vegetable_stir_fry": 1,
+        "french_toast": 2,
+        "fried_rice": 3,
+        "egg_sandwich": 2,
+        "salmon_saute": 1
+      },
+      "reproducible": true
+    }
+  ]
+}

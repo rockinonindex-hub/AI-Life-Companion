@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const { performance } = require('node:perf_hooks');
 const root = path.resolve(__dirname, '..');
-for (const file of ['data.js', 'events.js', 'simulation.js']) vm.runInThisContext(fs.readFileSync(path.join(root, file), 'utf8'), { filename: file });
+for (const file of ['presets/recipes.js', 'presets/ingredients.js', 'presets/snacks.js', 'data.js', 'cooking.js', 'events.js', 'simulation.js', 'storage.js']) vm.runInThisContext(fs.readFileSync(path.join(root, file), 'utf8'), { filename: file });
 const L = globalThis.Life;
 const start = new Date('2026-11-01T00:00:00+09:00').getTime();
 let passed = 0;
@@ -50,14 +50,19 @@ test('食材不足 → 買い物 → 調理可能', () => {
 });
 test('7日分の在庫・食材消費を全イベントから再計算', () => { auditInventory(sample); assert(sample.eventLog.some(e => e.type === 'cooking')); });
 test('失敗した料理も食材を消費し、経験に反映', () => {
-  const c = create();
-  // Exercise the failure branch deliberately; a random seven-day run may succeed every time.
-  const e = L.EventResolver.resolve(c.manager.state, { id: 'cooking' }, start, () => 0.999);
+  const c = create(7, w => {
+    w.knownRecipes = ['pork_saute']; w.pendingMeal = 'pork_saute';
+    for (const id of Object.keys(w.inventory)) w.inventory[id] = 0;
+    w.inventory.cookie = 1; w.inventory.tofu = 1;
+  });
+  // Role-mismatched low-compatibility substitutes, choose substitution explicitly.
+  const rolls = [.9, 0];
+  const e = L.EventResolver.resolve(c.manager.state, { id: 'cooking' }, start, () => rolls.shift() ?? 0);
   assert.equal(e.result, 'failure'); assert(Object.values(e.effects.inventory).every(v => v < 0));
   c.manager.process(e);
   assert.equal(c.manager.state.outcomes.failure, 1);
   assert.equal(c.manager.state.experience.cooking, 1);
-  assert.equal(c.manager.state.inventory.pork, 1);
+  assert.equal(c.manager.state.inventory.cookie, 0);
 });
 test('不足する同じ食材を複数スロットで二重使用しない', () => {
   const previous = L.recipes.pork_saute.slots;
@@ -97,7 +102,7 @@ test('代用は属性から探索・普通の代用と異種の代用を区別',
   const w = L.createWorld(start);
   assert.equal(L.planRecipe(w, 'sweet_sour_pork', false).missing[0], 'pineapple');
   const adventurous = L.planRecipe(w, 'sweet_sour_pork', true);
-  assert.equal(adventurous.substitutions[0].replacement, 'kouignAmann'); assert(adventurous.unusual);
+  assert.equal(adventurous.substitutions[0].replacement, 'onion'); assert(adventurous.unusual);
   w.inventory.apple = 1;
   assert.equal(L.planRecipe(w, 'sweet_sour_pork', true).substitutions[0].replacement, 'apple');
   w.inventory.pork = 0; w.inventory.chicken = 1;
@@ -200,7 +205,7 @@ test('長時間の連続利用でもログと日記のサイズ上限を維持',
 fs.mkdirSync(path.join(root, 'samples'), { recursive: true });
 fs.writeFileSync(path.join(root, 'samples', 'seven-days.json'), JSON.stringify(sample, null, 2) + '\n');
 const formatTime = e => new Date(e.timestamp).toLocaleTimeString('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', hour12: false });
-const lines = ['# 7日間の生活シミュレーション（実行結果）', '', '固定シード：20261101 / 2026-11-01〜2026-11-07 / Asia/Tokyo。1日ごとに進めた通常精度の記録（90分刻み）。', '', `生活イベント：${sample.eventLog.length}件 / 料理：${sample.experience.cooking}回 / 成功：${sample.outcomes.success}回 / 失敗：${sample.outcomes.failure}回`, '', '## 日記', ''];
+const lines = ['# 7日間の生活シミュレーション（実行結果）', '', '固定シード：20261101 / 2026-11-01〜2026-11-07 / Asia/Tokyo。1日ごとに進めた通常精度の記録（90分刻み）。', '', `生活イベント：${sample.eventLog.length}件 / 料理：${sample.experience.cooking}回 / 成功：${sample.outcomes.success}回 / 変わった料理：${sample.outcomes.unusual}回 / 失敗：${sample.outcomes.failure}回`, '', '## 日記', ''];
 for (const d of sample.diary) lines.push(`### ${d.day}`, '', d.text, '', `参照：${d.eventIds.join(', ')}`, '');
 lines.push('## 全生活ログ', '', '| 日時（日本時間） | ID | 行動 | 出来事 |', '| --- | --- | --- | --- |');
 for (const e of sample.eventLog) lines.push(`| ${L.dayKey(e.timestamp)} ${formatTime(e)} | ${e.id} | ${e.action} | ${e.text} |`);
@@ -210,3 +215,4 @@ lines.push('', '## 興味の変化', '', '| 興味 | 初期値 | 7日後 |', '| 
 for (const [id, value] of Object.entries(sample.character.interests)) lines.push(`| ${L.topics[id]} | ${L.createWorld(start).character.interests[id].toFixed(3)} | ${value.toFixed(3)} |`);
 fs.writeFileSync(path.join(root, 'samples', 'seven-days.md'), lines.join('\n') + '\n');
 console.log(`\n${passed} tests passed. Samples written to samples/.`);
+

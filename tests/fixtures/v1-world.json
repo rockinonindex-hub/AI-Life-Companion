@@ -1,0 +1,1164 @@
+{
+  "schemaVersion": 1,
+  "character": {
+    "name": "フミ",
+    "interests": {
+      "cooking": 0.6708010748275558,
+      "reading": 0.6913555220115664,
+      "music": 0.4339231632066721,
+      "gardening": 0.2
+    },
+    "personality": {
+      "curiosity": 0.7,
+      "adventurousness": 0.5
+    },
+    "currentActivity": "cooking",
+    "currentDetail": "ポークソテーを作った。香ばしいソテーになって、おいしく食べた。"
+  },
+  "inventory": {
+    "pork": 3,
+    "chicken": 0,
+    "onion": 0,
+    "carrot": 0,
+    "pineapple": 0,
+    "apple": 0,
+    "lemon": 0,
+    "kouignAmann": 1,
+    "cookie": 0,
+    "chocolate": 0
+  },
+  "knownRecipes": [
+    "sweet_sour_pork",
+    "pork_saute",
+    "fruit_compote"
+  ],
+  "experience": {
+    "cooking": 3
+  },
+  "outcomes": {
+    "success": 3,
+    "failure": 0
+  },
+  "recipeStats": {
+    "pork_saute": {
+      "success": 3,
+      "failure": 0
+    }
+  },
+  "recentActions": [
+    {
+      "action": "sleeping",
+      "timestamp": "2026-11-01T04:30:00.000Z"
+    },
+    {
+      "action": "sleeping",
+      "timestamp": "2026-11-01T06:00:00.000Z"
+    },
+    {
+      "action": "cooking",
+      "timestamp": "2026-11-01T07:30:00.000Z"
+    },
+    {
+      "action": "hobby",
+      "topic": "reading",
+      "timestamp": "2026-11-01T09:00:00.000Z"
+    },
+    {
+      "action": "shopping",
+      "timestamp": "2026-11-01T10:30:00.000Z"
+    },
+    {
+      "action": "reading",
+      "topic": "cooking",
+      "timestamp": "2026-11-01T12:00:00.000Z"
+    },
+    {
+      "action": "reading",
+      "topic": "music",
+      "timestamp": "2026-11-01T13:30:00.000Z"
+    },
+    {
+      "action": "cooking",
+      "timestamp": "2026-11-01T15:00:00.000Z"
+    }
+  ],
+  "pendingShopping": [],
+  "reservedSnacks": [],
+  "eventLog": [
+    {
+      "timestamp": "2026-10-31T15:00:00.000Z",
+      "type": "reading",
+      "action": "read_reading",
+      "text": "小説を読んだ。気になるページにしおりを挟んだ。",
+      "importance": 0.4,
+      "effects": {
+        "activity": "reading",
+        "topic": "reading",
+        "interests": {
+          "reading": 0.035,
+          "cooking": 0,
+          "music": 0,
+          "gardening": 0
+        },
+        "learnRecipe": null,
+        "rngState": 1620651709,
+        "nextActionAt": 1793464200000,
+        "lastActionAt": 1793458800000
+      },
+      "topic": "reading",
+      "representative": false,
+      "selection": {
+        "chosen": "reading",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 1.345
+          },
+          {
+            "id": "cooking",
+            "weight": 0.57
+          },
+          {
+            "id": "snack",
+            "weight": 1.7
+          },
+          {
+            "id": "hobby",
+            "weight": 1.05
+          },
+          {
+            "id": "shopping",
+            "weight": 0.08
+          },
+          {
+            "id": "rest",
+            "weight": 0.65
+          }
+        ]
+      },
+      "id": "event_000001"
+    },
+    {
+      "timestamp": "2026-10-31T16:30:00.000Z",
+      "type": "rest",
+      "action": "take_a_break",
+      "text": "窓の外を眺めながら、ひと休みした。",
+      "importance": 0.18,
+      "effects": {
+        "activity": "rest",
+        "interests": {
+          "cooking": 0,
+          "reading": -0.0010768367933279563,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 3969593178,
+        "nextActionAt": 1793469600000,
+        "lastActionAt": 1793464200000
+      },
+      "representative": false,
+      "selection": {
+        "chosen": "rest",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.5795999999999999
+          },
+          {
+            "id": "cooking",
+            "weight": 0.57
+          },
+          {
+            "id": "snack",
+            "weight": 1.7
+          },
+          {
+            "id": "hobby",
+            "weight": 1.085
+          },
+          {
+            "id": "shopping",
+            "weight": 0.08
+          },
+          {
+            "id": "rest",
+            "weight": 0.65
+          }
+        ]
+      },
+      "id": "event_000003"
+    },
+    {
+      "timestamp": "2026-10-31T18:00:00.000Z",
+      "type": "cooking",
+      "action": "make_pork_saute",
+      "text": "初めてポークソテーを作った。香ばしいソテーになって、おいしく食べた。",
+      "importance": 0.85,
+      "effects": {
+        "activity": "cooking",
+        "inventory": {
+          "pork": -1,
+          "onion": -1
+        },
+        "cooking": {
+          "recipeId": "pork_saute",
+          "success": true
+        },
+        "interests": {
+          "cooking": 0.045,
+          "reading": -0.0010437060082003906,
+          "music": 0,
+          "gardening": 0
+        },
+        "shopping": [],
+        "rngState": 885010003,
+        "nextActionAt": 1793475000000,
+        "lastActionAt": 1793469600000
+      },
+      "recipeId": "pork_saute",
+      "ingredientsUsed": [
+        {
+          "id": "pork",
+          "quantity": 1
+        },
+        {
+          "id": "onion",
+          "quantity": 1
+        }
+      ],
+      "substitutions": [],
+      "result": "success",
+      "successProbability": 0.79,
+      "firstAttempt": true,
+      "representative": false,
+      "selection": {
+        "chosen": "cooking",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.5791477285468022
+          },
+          {
+            "id": "cooking",
+            "weight": 3.61
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 1.0839231632066721
+          },
+          {
+            "id": "shopping",
+            "weight": 0.08
+          },
+          {
+            "id": "rest",
+            "weight": 0.273
+          }
+        ]
+      },
+      "id": "event_000005",
+      "inventoryBefore": {
+        "pork": 2,
+        "chicken": 0,
+        "onion": 3,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      },
+      "inventoryAfter": {
+        "pork": 1,
+        "chicken": 0,
+        "onion": 2,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      }
+    },
+    {
+      "timestamp": "2026-10-31T19:30:00.000Z",
+      "type": "reading",
+      "action": "read_cooking",
+      "text": "料理の本を読んだ。フルーツコンポートの作り方を覚えた。",
+      "importance": 0.72,
+      "effects": {
+        "activity": "reading",
+        "topic": "cooking",
+        "interests": {
+          "cooking": 0.03361549555143549,
+          "reading": 0.006988405449829541,
+          "music": 0,
+          "gardening": 0
+        },
+        "learnRecipe": "fruit_compote",
+        "rngState": 988507539,
+        "nextActionAt": 1793480400000,
+        "lastActionAt": 1793475000000
+      },
+      "topic": "cooking",
+      "representative": false,
+      "selection": {
+        "chosen": "reading",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.578709372023358
+          },
+          {
+            "id": "cooking",
+            "weight": 1.7294854499999999
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 1.0828794571984717
+          },
+          {
+            "id": "shopping",
+            "weight": 0.08
+          },
+          {
+            "id": "rest",
+            "weight": 0.273
+          }
+        ]
+      },
+      "id": "event_000007"
+    },
+    {
+      "timestamp": "2026-10-31T21:00:00.000Z",
+      "type": "hobby",
+      "action": "enjoy_cooking",
+      "text": "料理ノートを広げて、次に試したい味を考えた。",
+      "importance": 0.4,
+      "effects": {
+        "activity": "hobby",
+        "topic": "cooking",
+        "interests": {
+          "cooking": 0.000581255481842971,
+          "reading": -0.0012266051820296051,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 143015548,
+        "nextActionAt": 1793485800000,
+        "lastActionAt": 1793480400000
+      },
+      "topic": "cooking",
+      "representative": false,
+      "selection": {
+        "chosen": "hobby",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.24429069097116032
+          },
+          {
+            "id": "cooking",
+            "weight": 0.2866092400441414
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 1.0898678626483014
+          },
+          {
+            "id": "shopping",
+            "weight": 0.08
+          },
+          {
+            "id": "rest",
+            "weight": 0.273
+          }
+        ]
+      },
+      "id": "event_000009"
+    },
+    {
+      "timestamp": "2026-10-31T22:30:00.000Z",
+      "type": "reading",
+      "action": "read_reading",
+      "text": "小説を読んだ。気になるページにしおりを挟んだ。",
+      "importance": 0.4,
+      "effects": {
+        "activity": "reading",
+        "topic": "reading",
+        "interests": {
+          "reading": 0.033811133491996,
+          "cooking": -0.0024366278692762302,
+          "music": 0,
+          "gardening": 0
+        },
+        "learnRecipe": null,
+        "rngState": 1058154060,
+        "nextActionAt": 1793491200000,
+        "lastActionAt": 1793485800000
+      },
+      "topic": "reading",
+      "representative": false,
+      "selection": {
+        "chosen": "reading",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.5811293281358341
+          },
+          {
+            "id": "cooking",
+            "weight": 0.2868432360634669
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 0.45722932813583417
+          },
+          {
+            "id": "shopping",
+            "weight": 0.08
+          },
+          {
+            "id": "rest",
+            "weight": 0.273
+          }
+        ]
+      },
+      "id": "event_000011"
+    },
+    {
+      "timestamp": "2026-11-01T00:00:00.000Z",
+      "type": "rest",
+      "action": "sleep",
+      "text": "ソファで毛布にくるまって、ゆっくり眠った。",
+      "importance": 0.18,
+      "effects": {
+        "activity": "sleeping",
+        "interests": {
+          "cooking": -0.0023616607109538034,
+          "reading": -0.002229125724241271,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 11071361,
+        "nextActionAt": 1793496600000,
+        "lastActionAt": 1793491200000
+      },
+      "representative": false,
+      "selection": {
+        "chosen": "rest",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.012501930088251921
+          },
+          {
+            "id": "cooking",
+            "weight": 0.0028586232278213232
+          },
+          {
+            "id": "snack",
+            "weight": 0.006
+          },
+          {
+            "id": "hobby",
+            "weight": 0.014142900126074174
+          },
+          {
+            "id": "shopping",
+            "weight": 0
+          },
+          {
+            "id": "rest",
+            "weight": 35
+          }
+        ]
+      },
+      "id": "event_000013"
+    },
+    {
+      "timestamp": "2026-11-01T01:30:00.000Z",
+      "type": "rest",
+      "action": "sleep",
+      "text": "ソファで毛布にくるまって、ゆっくり眠った。",
+      "importance": 0.18,
+      "effects": {
+        "activity": "sleeping",
+        "interests": {
+          "cooking": -0.002289000049613458,
+          "reading": -0.00216054273576079,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 3057706125,
+        "nextActionAt": 1793502000000,
+        "lastActionAt": 1793496600000
+      },
+      "representative": false,
+      "selection": {
+        "chosen": "rest",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.012482269199364113
+          },
+          {
+            "id": "cooking",
+            "weight": 0.0067836092626124694
+          },
+          {
+            "id": "snack",
+            "weight": 0.006
+          },
+          {
+            "id": "hobby",
+            "weight": 0.014114813141948733
+          },
+          {
+            "id": "shopping",
+            "weight": 0
+          },
+          {
+            "id": "rest",
+            "weight": 35
+          }
+        ]
+      },
+      "id": "event_000014"
+    },
+    {
+      "timestamp": "2026-11-01T03:00:00.000Z",
+      "type": "rest",
+      "action": "sleep",
+      "text": "ソファで毛布にくるまって、ゆっくり眠った。",
+      "importance": 0.18,
+      "effects": {
+        "activity": "sleeping",
+        "interests": {
+          "cooking": -0.0022185749218033655,
+          "reading": -0.0020940698240057985,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 4042468677,
+        "nextActionAt": 1793507400000,
+        "lastActionAt": 1793502000000
+      },
+      "representative": false,
+      "selection": {
+        "chosen": "rest",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.029674317172463577
+          },
+          {
+            "id": "cooking",
+            "weight": 0.0067616691971369245
+          },
+          {
+            "id": "snack",
+            "weight": 0.006
+          },
+          {
+            "id": "hobby",
+            "weight": 0.01408759030347815
+          },
+          {
+            "id": "shopping",
+            "weight": 0
+          },
+          {
+            "id": "rest",
+            "weight": 35
+          }
+        ]
+      },
+      "id": "event_000015"
+    },
+    {
+      "timestamp": "2026-11-01T04:30:00.000Z",
+      "type": "rest",
+      "action": "sleep",
+      "text": "ソファで毛布にくるまって、ゆっくり眠った。",
+      "importance": 0.18,
+      "effects": {
+        "activity": "sleeping",
+        "interests": {
+          "cooking": -0.0021503165473875795,
+          "reading": -0.0020296420687404477,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 1042496232,
+        "nextActionAt": 1793512800000,
+        "lastActionAt": 1793507400000
+      },
+      "representative": false,
+      "selection": {
+        "chosen": "rest",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.029630341706159455
+          },
+          {
+            "id": "cooking",
+            "weight": 0.006740404156511439
+          },
+          {
+            "id": "snack",
+            "weight": 0.006
+          },
+          {
+            "id": "hobby",
+            "weight": 0.033479059580227795
+          },
+          {
+            "id": "shopping",
+            "weight": 0
+          },
+          {
+            "id": "rest",
+            "weight": 35
+          }
+        ]
+      },
+      "id": "event_000016"
+    },
+    {
+      "timestamp": "2026-11-01T06:00:00.000Z",
+      "type": "rest",
+      "action": "sleep",
+      "text": "ソファで毛布にくるまって、ゆっくり眠った。",
+      "importance": 0.18,
+      "effects": {
+        "activity": "sleeping",
+        "interests": {
+          "cooking": -0.002084158262372467,
+          "reading": -0.0019671965471145625,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 1992088759,
+        "nextActionAt": 1793518200000,
+        "lastActionAt": 1793512800000
+      },
+      "representative": false,
+      "selection": {
+        "chosen": "rest",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.07044695053027597
+          },
+          {
+            "id": "cooking",
+            "weight": 0.00671979337240473
+          },
+          {
+            "id": "snack",
+            "weight": 0.006
+          },
+          {
+            "id": "hobby",
+            "weight": 0.03341817031816558
+          },
+          {
+            "id": "shopping",
+            "weight": 0
+          },
+          {
+            "id": "rest",
+            "weight": 35
+          }
+        ]
+      },
+      "id": "event_000017"
+    },
+    {
+      "timestamp": "2026-11-01T07:30:00.000Z",
+      "type": "cooking",
+      "action": "make_pork_saute",
+      "text": "ポークソテーを作った。香ばしいソテーになって、おいしく食べた。",
+      "importance": 0.58,
+      "effects": {
+        "activity": "cooking",
+        "inventory": {
+          "pork": -1,
+          "onion": -1
+        },
+        "cooking": {
+          "recipeId": "pork_saute",
+          "success": true
+        },
+        "interests": {
+          "cooking": 0.042979964546200136,
+          "reading": -0.0019066722722105441,
+          "music": 0,
+          "gardening": 0
+        },
+        "shopping": [],
+        "rngState": 555018872,
+        "nextActionAt": 1793523600000,
+        "lastActionAt": 1793518200000
+      },
+      "recipeId": "pork_saute",
+      "ingredientsUsed": [
+        {
+          "id": "pork",
+          "quantity": 1
+        },
+        {
+          "id": "onion",
+          "quantity": 1
+        }
+      ],
+      "substitutions": [],
+      "result": "success",
+      "successProbability": 0.798,
+      "firstAttempt": false,
+      "representative": false,
+      "selection": {
+        "chosen": "cooking",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 1.4069718140584049
+          },
+          {
+            "id": "cooking",
+            "weight": 4.243217253124596
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 1.111971814058405
+          },
+          {
+            "id": "shopping",
+            "weight": 0.08
+          },
+          {
+            "id": "rest",
+            "weight": 0.020226024
+          }
+        ]
+      },
+      "id": "event_000018",
+      "inventoryBefore": {
+        "pork": 1,
+        "chicken": 0,
+        "onion": 2,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      },
+      "inventoryAfter": {
+        "pork": 0,
+        "chicken": 0,
+        "onion": 1,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-01T09:00:00.000Z",
+      "type": "hobby",
+      "action": "enjoy_reading",
+      "text": "お気に入りの小説を読み返した。",
+      "importance": 0.4,
+      "effects": {
+        "activity": "hobby",
+        "topic": "reading",
+        "interests": {
+          "reading": 0.026151989866519013,
+          "cooking": -0.0033423899452078433,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 2391344908,
+        "nextActionAt": 1793529000000,
+        "lastActionAt": 1793523600000
+      },
+      "topic": "reading",
+      "representative": false,
+      "selection": {
+        "chosen": "hobby",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 1.4050651417861941
+          },
+          {
+            "id": "cooking",
+            "weight": 0.3169249421649271
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 1.1100651417861944
+          },
+          {
+            "id": "shopping",
+            "weight": 7
+          },
+          {
+            "id": "rest",
+            "weight": 0.04815719999999999
+          }
+        ]
+      },
+      "id": "event_000020"
+    },
+    {
+      "timestamp": "2026-11-01T10:30:00.000Z",
+      "type": "shopping",
+      "action": "buy_ingredients",
+      "text": "豚肉を買って、冷蔵庫にしまった。",
+      "importance": 0.38,
+      "effects": {
+        "activity": "shopping",
+        "inventory": {
+          "pork": 4
+        },
+        "shopping": [],
+        "interests": {
+          "cooking": -0.0032395554174750084,
+          "reading": -0.0026526222736812013,
+          "music": 0,
+          "gardening": 0
+        },
+        "rngState": 1668470584,
+        "nextActionAt": 1793534400000,
+        "lastActionAt": 1793529000000
+      },
+      "itemsBought": {
+        "pork": 4
+      },
+      "representative": false,
+      "selection": {
+        "chosen": "shopping",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 1.4312171316527131
+          },
+          {
+            "id": "cooking",
+            "weight": 0.315497273723731
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 0.47721119529413963
+          },
+          {
+            "id": "shopping",
+            "weight": 7
+          },
+          {
+            "id": "rest",
+            "weight": 0.11465999999999998
+          }
+        ]
+      },
+      "id": "event_000022",
+      "inventoryBefore": {
+        "pork": 0,
+        "chicken": 0,
+        "onion": 1,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      },
+      "inventoryAfter": {
+        "pork": 4,
+        "chicken": 0,
+        "onion": 1,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-01T12:00:00.000Z",
+      "type": "reading",
+      "action": "read_cooking",
+      "text": "料理の本を読んだ。気になるページにしおりを挟んだ。",
+      "importance": 0.4,
+      "effects": {
+        "activity": "reading",
+        "topic": "cooking",
+        "interests": {
+          "cooking": 0.03186011522445534,
+          "reading": 0.005428990333835976,
+          "music": 0,
+          "gardening": 0
+        },
+        "learnRecipe": null,
+        "rngState": 785241247,
+        "nextActionAt": 1793539800000,
+        "lastActionAt": 1793534400000
+      },
+      "topic": "cooking",
+      "representative": false,
+      "selection": {
+        "chosen": "reading",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 1.428564509379032
+          },
+          {
+            "id": "cooking",
+            "weight": 1.989385690143835
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 0.47609709393919347
+          },
+          {
+            "id": "shopping",
+            "weight": 0.0336
+          },
+          {
+            "id": "rest",
+            "weight": 0.273
+          }
+        ]
+      },
+      "id": "event_000024"
+    },
+    {
+      "timestamp": "2026-11-01T13:30:00.000Z",
+      "type": "reading",
+      "action": "read_music",
+      "text": "音楽の本を読んだ。気になるページにしおりを挟んだ。",
+      "importance": 0.4,
+      "effects": {
+        "activity": "reading",
+        "topic": "music",
+        "interests": {
+          "music": 0.035,
+          "reading": 0.005261957861204652,
+          "cooking": -0.0041201174702121405,
+          "gardening": 0
+        },
+        "learnRecipe": null,
+        "rngState": 2054161299,
+        "nextActionAt": 1793545200000,
+        "lastActionAt": 1793539800000
+      },
+      "topic": "music",
+      "representative": false,
+      "selection": {
+        "chosen": "reading",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.6022772698794044
+          },
+          {
+            "id": "cooking",
+            "weight": 2.075574311051336
+          },
+          {
+            "id": "snack",
+            "weight": 0.3
+          },
+          {
+            "id": "hobby",
+            "weight": 0.4783772698794046
+          },
+          {
+            "id": "shopping",
+            "weight": 0.0336
+          },
+          {
+            "id": "rest",
+            "weight": 0.65
+          }
+        ]
+      },
+      "id": "event_000026"
+    },
+    {
+      "timestamp": "2026-11-01T15:00:00.000Z",
+      "type": "cooking",
+      "action": "make_pork_saute",
+      "text": "ポークソテーを作った。香ばしいソテーになって、おいしく食べた。",
+      "importance": 0.58,
+      "effects": {
+        "activity": "cooking",
+        "inventory": {
+          "pork": -1,
+          "onion": -1
+        },
+        "cooking": {
+          "recipeId": "pork_saute",
+          "success": true
+        },
+        "interests": {
+          "cooking": 0.04100664521792379,
+          "reading": -0.0028999355625063893,
+          "music": -0.0010768367933279563,
+          "gardening": 0
+        },
+        "shopping": [],
+        "rngState": 2894201394,
+        "nextActionAt": 1793550600000,
+        "lastActionAt": 1793545200000
+      },
+      "recipeId": "pork_saute",
+      "ingredientsUsed": [
+        {
+          "id": "pork",
+          "quantity": 1
+        },
+        {
+          "id": "onion",
+          "quantity": 1
+        }
+      ],
+      "substitutions": [],
+      "result": "success",
+      "successProbability": 0.806,
+      "firstAttempt": false,
+      "representative": false,
+      "selection": {
+        "chosen": "cooking",
+        "weights": [
+          {
+            "id": "reading",
+            "weight": 0.25388466271606636
+          },
+          {
+            "id": "cooking",
+            "weight": 0.7761009349129958
+          },
+          {
+            "id": "snack",
+            "weight": 1.7
+          },
+          {
+            "id": "hobby",
+            "weight": 0.4805872921811105
+          },
+          {
+            "id": "shopping",
+            "weight": 0.0336
+          },
+          {
+            "id": "rest",
+            "weight": 0.65
+          }
+        ]
+      },
+      "id": "event_000028",
+      "inventoryBefore": {
+        "pork": 4,
+        "chicken": 0,
+        "onion": 1,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      },
+      "inventoryAfter": {
+        "pork": 3,
+        "chicken": 0,
+        "onion": 0,
+        "carrot": 0,
+        "pineapple": 0,
+        "apple": 0,
+        "lemon": 0,
+        "kouignAmann": 1,
+        "cookie": 0,
+        "chocolate": 0
+      }
+    }
+  ],
+  "diary": [
+    {
+      "day": "2026-10-31",
+      "eventIds": [
+        "event_000005",
+        "event_000007",
+        "event_000009"
+      ],
+      "text": "初めてポークソテーを作った。香ばしいソテーになって、おいしく食べた。 料理の本を読んだ。フルーツコンポートの作り方を覚えた。 料理ノートを広げて、次に試したい味を考えた。",
+      "partial": false
+    },
+    {
+      "day": "2026-11-01",
+      "eventIds": [
+        "event_000020",
+        "event_000026",
+        "event_000028"
+      ],
+      "text": "お気に入りの小説を読み返した。 音楽の本を読んだ。気になるページにしおりを挟んだ。 ポークソテーを作った。香ばしいソテーになって、おいしく食べた。",
+      "partial": false
+    }
+  ],
+  "lastSimulatedAt": 1793545200000,
+  "lastActionAt": 1793545200000,
+  "nextActionAt": 1793550600000,
+  "createdAt": 1793458800000,
+  "rngState": 2894201394,
+  "nextEventId": 31,
+  "coverage": [],
+  "archivedEvents": 0,
+  "interactionCount": 0
+}

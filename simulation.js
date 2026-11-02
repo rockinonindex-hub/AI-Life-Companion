@@ -28,11 +28,11 @@
   L.Simulation = class {
     constructor(manager) { this.manager = manager; }
     updateDiary(day, at) {
-      const entry = L.MemoryLogger.diary(this.manager.state, day);
+      const entry = L.MemoryLogger.diary(this.manager.snapshot, day);
       if (entry) this.manager.process(L.makeEvent(at, 'diary', 'write_diary', '日記を更新した。', 0, { diary: entry }));
     }
     step(at, representative = false, interval = L.STEP) {
-      const world = this.manager.state, rng = L.random(world.rngState);
+      const world = this.manager.snapshot, rng = L.random(world.rngState);
       const choice = L.ActionSelector.choose(world, at, rng);
       const e = L.EventResolver.resolve(world, choice, at, rng);
       // Interests relax toward individual baselines; repeated topics add fatigue.
@@ -55,7 +55,7 @@
     }
     advance(target) {
       if (!Number.isFinite(target) || Math.abs(target) > 8e15) throw new Error('時刻の指定が不正です。');
-      const start = this.manager.state.lastSimulatedAt ?? this.manager.state.createdAt;
+      const start = this.manager.snapshot.lastSimulatedAt ?? this.manager.snapshot.createdAt;
       if (target < start) return { actions: 0, compressed: false, clockSkew: true };
       const recentStart = Math.max(start, target - 3 * L.DAY);
       let actions = 0, compressed = false;
@@ -69,7 +69,7 @@
           const at = Math.floor(start + duration * (i + 0.5) / count);
           this.step(at, true); actions++;
         }
-        const world = this.manager.state;
+        const world = this.manager.snapshot;
         const samples = world.eventLog.filter(e => e.representative && Date.parse(e.timestamp) >= start && Date.parse(e.timestamp) <= recentStart);
         const cooking = samples.filter(e => e.type === 'cooking').length;
         const text = `${L.dayKey(start)}〜${L.dayKey(recentStart)}は代表記録${count}件にまとめた。記録した料理は${cooking}回。省略した時間の個々の行動は再現していない。`;
@@ -79,23 +79,23 @@
         // Coverage is known only after the older interval is resolved. Refresh all
         // affected diary labels, including days sampled before the summary event.
         const days = new Set(samples.map(e => L.dayKey(e.timestamp)));
-        for (const diary of this.manager.state.diary) {
+        for (const diary of this.manager.snapshot.diary) {
           if (diary.day >= L.dayKey(start) && diary.day <= L.dayKey(recentStart)) days.add(diary.day);
         }
         days.add(L.dayKey(recentStart));
         for (const day of days) this.updateDiary(day, recentStart);
       }
-      let next = this.manager.state.nextActionAt;
+      let next = this.manager.snapshot.nextActionAt;
       while (next <= target && actions < L.LIMITS.actions) {
-        this.step(Math.max(next, this.manager.state.lastSimulatedAt ?? start)); actions++;
-        next = this.manager.state.nextActionAt;
+        this.step(Math.max(next, this.manager.snapshot.lastSimulatedAt ?? start)); actions++;
+        next = this.manager.snapshot.nextActionAt;
       }
       this.manager.process(L.makeEvent(target, 'clock', 'advance_clock', '生活時計を更新した。', 0));
       return { actions, compressed, clockSkew: false };
     }
     gift(id, at) {
       this.advance(at);
-      this.manager.process(L.EventResolver.gift(this.manager.state, id, at));
+      this.manager.process(L.EventResolver.gift(this.manager.snapshot, id, at));
       this.updateDiary(L.dayKey(at), at);
     }
     rename(name, at) {
@@ -136,13 +136,5 @@
       return (events.length ? `${yesterday ? '昨日' : '今日'}の記録では、${describe(events)}` : `${day}の生活記録は残っていないよ。`) + coverageNote(day);
     }
     return `${name}の生活記録から答えるよ。「今日何してた？」「昨日何してた？」「何食べた？」「最近何に興味がある？」「日記を見せて」と話しかけてね。`;
-  };
-  L.Storage = {
-    load(storage) {
-      const raw = storage.getItem(L.STORAGE_KEY);
-      if (raw === null) return null;
-      const world = JSON.parse(raw); L.validateWorld(world); return world;
-    },
-    save(storage, world) { L.validateWorld(world); storage.setItem(L.STORAGE_KEY, JSON.stringify(world)); }
   };
 })(globalThis);

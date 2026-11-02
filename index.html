@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f4eee2">
+  <title>ふみの暮らし | AI Life Companion</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="data.js"></script>
+  <script defer src="events.js"></script>
+  <script defer src="simulation.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="header">
+      <a href="#" class="brand" aria-label="ふみの暮らし ホーム"><span class="brand-icon">⌂</span><span><strong id="title">ふみの暮らし</strong><small>AI LIFE COMPANION · v0.1</small></span></a>
+      <div class="header-right"><span class="local-label"><i></i> このブラウザーの小さな世界</span><button id="debug-toggle" class="icon-button" aria-expanded="false" aria-controls="debug" title="開発モード">⚙<span class="sr-only">開発モード</span></button></div>
+    </header>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <div class="intro"><div><p class="eyebrow">A LITTLE LIFE, AT ITS OWN PACE</p><h1>今日も、気ままに。</h1><p>本を読んだり、料理をしたり。ここには、ひとつの日常があります。</p></div><div class="clock"><span id="date-label"></span><strong id="clock-label"></strong><small id="clock-mode">部屋の時計</small></div></div>
+    <main class="layout">
+      <section class="room-card" aria-labelledby="room-title">
+        <div class="card-top"><h2 id="room-title">フミの部屋</h2><span id="activity-badge" class="badge">📖 読書中</span></div>
+        <div class="room" id="room" role="img" aria-label="小さな部屋で暮らすフミ">
+          <div class="wall-paper"></div><div class="baseboard"></div><div class="floor"></div>
+          <div class="window"><div class="sky" id="sky"><span class="sun">☀</span><i></i><b></b></div><div class="window-cross"></div></div>
+          <div class="wall-clock"><span>◷</span></div>
+          <div class="bookshelf"><div class="books"><i></i><i></i><i></i><i></i><i></i></div><div class="books second"><i></i><i></i><i></i></div><span>小さな本棚</span></div>
+          <div class="desk"><span class="desk-book">📖</span><span class="lamp">💡</span><b></b><small>読書と調べもの</small></div>
+          <div class="kitchen"><div class="fridge">❄<i></i></div><div class="counter"><span>🍳</span><i></i></div><small>台所</small></div>
+          <div class="plant">🪴</div><div class="rug"></div>
+          <div class="sofa"><span></span><i></i><b></b><small>いつものソファ</small></div>
+          <div class="snack-shelf"><div id="shelf-snacks">🥮</div><small>おやつ棚</small></div>
+          <div class="door"><span>おでかけ</span><i></i></div>
+          <div id="character" class="character at-desk"><div class="thought" id="thought">📖</div><div class="person"><div class="hair"></div><div class="face"><i></i><b></b><span></span></div><div class="body"></div><div class="feet"></div></div><span class="name-tag" id="character-name">フミ</span></div>
+          <div class="room-caption">のんびり、じぶんのペースで。</div>
+        </div>
+        <div class="activity-strip"><span id="activity-icon">📖</span><div><small>いまの様子</small><p id="current-detail">部屋で本を開いたところ。</p></div></div>
+        <div class="room-footer"><span>☁ 離れている間も、暮らしの続きはここに。</span><span id="save-status">保存済み</span></div>
+      </section>
+      <aside class="side">
+        <section class="gift-card"><p class="eyebrow">A SMALL GIFT</p><h2>ちょっと、おすそわけ。</h2><p>すぐ食べるか、取っておくか。<br><span id="gift-description">あとはフミにおまかせ。</span></p><div class="gift-controls"><label class="sr-only" for="snack-choice">渡すおやつ</label><select id="snack-choice"><option value="kouignAmann">🥮 クイニーアマン</option><option value="cookie">🍪 クッキー</option><option value="chocolate">🍫 チョコレート</option></select><button id="give-snack" class="primary">おやつをあげる <span>＋</span></button></div><p id="gift-reply" class="gift-reply" role="status"></p></section>
+        <section class="diary-teaser"><div class="diary-icon">▤</div><p class="eyebrow">LITTLE MEMORIES</p><h2>日々の、ひとこと。</h2><p id="diary-preview">印象に残ったことを、少しずつ。</p><button id="open-diary" class="text-button">日記をひらく <span>↗</span></button></section>
+      </aside>
+      <section class="conversation" aria-labelledby="chat-heading"><div class="conversation-top"><h2 id="chat-heading">フミとおしゃべり</h2><span>生活の記録からお返事します</span></div><div id="chat-log" class="chat-log" role="log" aria-live="polite"><div class="message companion"><span>✿</span><p>ようこそ。この部屋で、のんびり暮らしているよ。</p></div></div><div class="quick-questions"><button>今日何してた？</button><button>何食べた？</button><button>最近何に興味がある？</button></div><form id="chat-form"><label class="sr-only" for="chat-input">話しかける</label><input id="chat-input" maxlength="200" placeholder="今日何してた？" autocomplete="off"><button type="submit" aria-label="送信">↑</button></form></section>
+    </main>
+    <footer class="footer"><span>小さな部屋に、小さな物語。</span><span>ローカル保存 · 外部API / LLM 接続なし</span></footer>
+    <section id="debug" class="debug" hidden aria-labelledby="debug-heading"><div class="card-top"><h2 id="debug-heading">開発モード</h2><span>時間・状態・因果関係の検証</span></div><p>時間を進めると、部屋の時計も進みます。通常の時計へ戻すには初期化してください。</p><div class="debug-controls"><button id="advance-day">1日進める</button><button id="advance-week">7日進める</button><button id="export-state">状態JSONを保存</button><button id="reset-world" class="danger">初期状態へリセット</button></div><form id="name-form"><label for="name-input">キャラクター名</label><input id="name-input" maxlength="20" required><button>変更</button></form><p id="debug-result" role="status"></p><details open><summary>行動選択の重み（次の行動時刻）</summary><div class="table-wrap"><table><thead><tr><th>行動</th><th>重み</th><th>直近の抑制</th><th>理由</th></tr></thead><tbody id="weights"></tbody></table></div></details><details><summary>World State</summary><pre id="world-state"></pre></details><details><summary>イベントログ（新しい順・最新100件）</summary><pre id="event-log"></pre></details></section>
+  </div>
+  <dialog id="diary-dialog" aria-labelledby="diary-heading"><div class="dialog-head"><div><p class="eyebrow">FUMI'S DIARY</p><h2 id="diary-heading">日々の、ひとこと。</h2></div><button id="close-diary" class="icon-button" aria-label="日記を閉じる">×</button></div><div id="diary-entries"></div><p class="diary-footnote">記録の中から、印象に残ったことを1〜3件。日記にない出来事も生活ログに残ります。</p></dialog>
+  <noscript>このアプリはJavaScriptを有効にして利用してください。</noscript>
+</body>
+</html>

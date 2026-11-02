@@ -11,6 +11,9 @@
     warning = '保存データを読み込めませんでした。元のデータは上書きせず、今回は一時的な部屋を開いています。開発モードの「状態JSONを保存」で現在の状態を書き出せます。永続保存を再開するには、元のデータを確認してから初期化してください。';
     manager = new L.WorldStateManager(L.createWorld());
   }
+  for (const [id, item] of Object.entries(L.snacks)) {
+    const option = document.createElement('option'); option.value = id; option.textContent = `${item.emoji} ${item.name}`; $('snack-choice').append(option);
+  }
   simulation = new L.Simulation(manager);
   const now = () => Math.max(Date.now(), manager.state.lastSimulatedAt ?? 0);
   function save() {
@@ -115,7 +118,7 @@
     manager = new L.WorldStateManager(L.createWorld()); simulation = new L.Simulation(manager);
     saveAllowed = true; warning = ''; $('gift-reply').textContent = ''; $('chat-log').replaceChildren();
     $('debug-result').textContent = '初期状態に戻しました。';
-    run(() => { storage = window.localStorage; simulation.advance(now()); });
+    run(() => { storage = window.localStorage; L.Storage.reset(storage, manager.state); simulation.advance(now()); });
   });
   $('export-state').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(manager.state, null, 2)], { type: 'application/json' });
@@ -141,3 +144,4 @@
   });
   setInterval(tick, 30000);
 })();
+

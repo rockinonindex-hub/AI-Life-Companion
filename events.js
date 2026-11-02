@@ -3,35 +3,6 @@
   const L = root.Life;
   const foodName = id => L.items[id].name;
   L.foodName = foodName;
-  // Plan with a private inventory copy: each slot reserves quantity immediately.
-  // Cross-category replacements are derived from shared attributes, never a fixed gag.
-  L.planRecipe = (world, recipeId, adventurous = false) => {
-    const recipe = L.recipes[recipeId], available = { ...world.inventory };
-    const used = [], substitutions = [], missing = [];
-    for (const slot of recipe.slots) {
-      let id = slot.id, unusual = false;
-      if (available[id] < slot.quantity) {
-        const original = L.items[slot.id];
-        const candidates = Object.entries(L.items).filter(([key, item]) => {
-          if (key === slot.id || available[key] < slot.quantity) return false;
-          const sameRole = item.substitutes.includes(slot.role);
-          const shared = original.substitutes.filter(tag => item.substitutes.includes(tag)).length;
-          return sameRole || (adventurous && shared > 0);
-        }).map(([key, item]) => ({ id: key, score:
-          (item.substitutes.includes(slot.role) ? 10 : 0) +
-          original.substitutes.filter(tag => item.substitutes.includes(tag)).length +
-          original.taste.filter(tag => item.taste.includes(tag)).length
-        })).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
-        if (!candidates.length) { missing.push(slot.id); continue; }
-        id = candidates[0].id;
-        unusual = !L.items[id].substitutes.includes(slot.role);
-        substitutions.push({ original: slot.id, replacement: id, quantity: slot.quantity, unusual });
-      }
-      available[id] -= slot.quantity;
-      used.push({ id, quantity: slot.quantity });
-    }
-    return { recipeId, used, substitutions, missing, unusual: substitutions.some(s => s.unusual) };
-  };
   L.MemoryLogger = {
     append(world, event) {
       world.eventLog.push(event);
@@ -60,6 +31,7 @@
   };
   L.validateWorld = world => {
     if (!world || world.schemaVersion !== L.VERSION) throw new Error('対応していない保存形式です。');
+    if (!Array.isArray(world.catalogItems) || !Array.isArray(world.catalogRecipes) || Object.keys(L.items).some(id => !world.catalogItems.includes(id)) || Object.keys(L.recipes).some(id => !world.catalogRecipes.includes(id))) throw new Error('カタログ情報が不正です。');
     if (!world.character || typeof world.character.name !== 'string' || !world.character.name.trim() || world.character.name.length > 20) throw new Error('名前が不正です。');
     if (!L.activities[world.character.currentActivity] || typeof world.character.currentDetail !== 'string') throw new Error('活動が不正です。');
     for (const id of Object.keys(L.items)) {
@@ -86,6 +58,22 @@
         !Number.isFinite(world.outcomes?.success) || !Number.isFinite(world.outcomes?.failure) ||
         !world.recipeStats || typeof world.recipeStats !== 'object') throw new Error('経験の値が不正です。');
     if (world.eventLog.length > L.LIMITS.logs || world.diary.length > L.LIMITS.diaries || world.coverage.length > 32 || world.recentActions.length > 8) throw new Error('記録上限を超えています。');
+    const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+    const counter = value => Number.isSafeInteger(value) && value >= 0;
+    if (!record(world.menuPreference) || !Number.isFinite(world.menuPreference.inventory) || !Number.isFinite(world.menuPreference.desire) ||
+        world.menuPreference.inventory < 0 || world.menuPreference.desire < 0 || Math.abs(world.menuPreference.inventory + world.menuPreference.desire - 1) > 1e-9) throw new Error('献立設定が不正です。');
+    if (world.pendingMeal !== null && !L.recipes[world.pendingMeal]) throw new Error('保留中の献立が不正です。');
+    if (!Array.isArray(world.recentMeals) || world.recentMeals.length > 4 || world.recentMeals.some(id => !L.recipes[id])) throw new Error('献立履歴が不正です。');
+    if (!record(world.shoppingQuantities) || Object.entries(world.shoppingQuantities).some(([id, n]) => !L.items[id] || !Number.isInteger(n) || n < 1 || n > 1000)) throw new Error('買い物数量が不正です。');
+    if (!counter(world.experience.cooking) || !record(world.outcomes) || ['success','unusual','failure'].some(key => !counter(world.outcomes[key])) ||
+        !record(world.recipeStats) || Object.entries(world.recipeStats).some(([id, stat]) => !L.recipes[id] || !record(stat) || ['success','unusual','failure'].some(key => !counter(stat[key])))) throw new Error('料理経験が不正です。');
+    if (!record(world.substitutionMemory)) throw new Error('代用履歴が不正です。');
+    for (const [key, stat] of Object.entries(world.substitutionMemory)) {
+      const [recipeId, index, replacement] = JSON.parse(key);
+      if (!L.recipes[recipeId]?.slots[index] || !Number.isInteger(index) || !L.items[replacement] || !record(stat) ||
+          ['attempts','success','unusual','failure','otherFailure'].some(k => !counter(stat[k])) ||
+          stat.attempts !== stat.success + stat.unusual + stat.failure + stat.otherFailure) throw new Error('代用履歴が不正です。');
+    }
     const ids = new Set();
     for (const e of world.eventLog) {
       if (!e || typeof e.id !== 'string' || ids.has(e.id) || !Number.isFinite(Date.parse(e.timestamp)) || typeof e.text !== 'string' || typeof e.type !== 'string' || !Number.isFinite(e.importance)) throw new Error('生活ログが不正です。');
@@ -94,12 +82,21 @@
     for (const d of world.diary) if (typeof d.day !== 'string' || typeof d.text !== 'string' || !Array.isArray(d.eventIds)) throw new Error('日記が不正です。');
     return true;
   };
+  const freeze = value => {
+    if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+      Object.values(value).forEach(freeze); Object.freeze(value);
+    }
+    return value;
+  };
   // The only write path. Resolve → validate private draft → atomically replace world.
   L.WorldStateManager = class {
-    constructor(world) { L.validateWorld(world); this._world = L.clone(world); }
+    constructor(world) { L.validateWorld(world); this._world = freeze(L.clone(world)); }
     get state() { return L.clone(this._world); }
+    // Frozen read view for the engine. Public state remains an independent copy.
+    get snapshot() { return this._world; }
     process(event) {
-      const world = L.clone(this._world), at = Date.parse(event.timestamp);
+      const { eventLog, diary, ...mutable } = this._world;
+      const world = { ...L.clone(mutable), eventLog: eventLog.slice(), diary: diary.slice() }, at = Date.parse(event.timestamp);
       if (!Number.isFinite(at) || at < (world.lastSimulatedAt ?? world.createdAt)) throw new Error('時刻が逆行しています。');
       const e = L.clone(event), fx = e.effects || {};
       e.id = `event_${String(world.nextEventId++).padStart(6, '0')}`;
@@ -123,11 +120,22 @@
       world.recentActions = world.recentActions.slice(-8);
       if (fx.cooking) {
         world.experience.cooking += 1;
-        const result = fx.cooking.success ? 'success' : 'failure';
+        const result = fx.cooking.result || (fx.cooking.success ? 'success' : 'failure');
+        if (!['success', 'unusual', 'failure'].includes(result) || !L.recipes[fx.cooking.recipeId]) throw new Error('調理結果が不正です。');
         world.outcomes[result] += 1;
-        const stat = world.recipeStats[fx.cooking.recipeId] || { success: 0, failure: 0 };
-        stat[result] += 1; world.recipeStats[fx.cooking.recipeId] = stat;
+        const stat = world.recipeStats[fx.cooking.recipeId] || { success: 0, unusual: 0, failure: 0 };
+        stat[result] = (stat[result] || 0) + 1; world.recipeStats[fx.cooking.recipeId] = stat;
+        world.recentMeals = [...world.recentMeals, fx.cooking.recipeId].slice(-4);
       }
+      if (fx.learning) for (const change of fx.learning) {
+        if (!['success', 'unusual', 'failure'].includes(change.result)) throw new Error('学習結果が不正です。');
+        const stat = world.substitutionMemory[change.key] || { attempts: 0, success: 0, unusual: 0, failure: 0, otherFailure: 0 };
+        stat.attempts++;
+        stat[change.result === 'failure' && !change.penalize ? 'otherFailure' : change.result]++;
+        world.substitutionMemory[change.key] = stat;
+      }
+      if (fx.pendingMeal !== undefined) world.pendingMeal = fx.pendingMeal;
+      if (fx.shoppingQuantities) world.shoppingQuantities = L.clone(fx.shoppingQuantities);
       if (fx.learnRecipe && !world.knownRecipes.includes(fx.learnRecipe)) world.knownRecipes.push(fx.learnRecipe);
       if (fx.shopping) world.pendingShopping = [...new Set(fx.shopping)];
       if (fx.reserve && !world.reservedSnacks.includes(fx.reserve)) world.reservedSnacks.push(fx.reserve);
@@ -146,7 +154,7 @@
       // Clock and diary events use the same reducer but do not crowd the life log.
       if (!['clock', 'diary'].includes(e.type)) L.MemoryLogger.append(world, e);
       L.validateWorld(world);
-      this._world = world;
+      this._world = freeze(world);
       return L.clone(e);
     }
   };
@@ -162,11 +170,12 @@
         (0.15 + weight) * (world.recentActions.slice(-3).some(a => a.topic === id) ? 0.3 : 1)
       })), rng).id;
       if (action === 'reading') {
-        const topic = topicChoice(), learn = topic === 'cooking' && !world.knownRecipes.includes('fruit_compote') && rng() < 0.45;
+        const topic = topicChoice(), unknown = Object.keys(L.recipes).filter(id => !world.knownRecipes.includes(id));
+        const learn = topic === 'cooking' && unknown.length && rng() < 0.45 ? unknown[Math.floor(rng() * unknown.length)] : null;
         const book = { reading: '小説', cooking: '料理の本', music: '音楽の本', gardening: '植物の本' }[topic];
-        const text = `${book}を読んだ。${learn ? 'フルーツコンポートの作り方を覚えた。' : '気になるページにしおりを挟んだ。'}`;
+        const text = `${book}を読んだ。${learn ? `${L.recipes[learn].name}の作り方を覚えた。` : '気になるページにしおりを挟んだ。'}`;
         return event(at, action, `read_${topic}`, text, learn ? 0.72 : 0.4,
-          { activity: action, topic, interests: { [topic]: 0.035, reading: topic === 'reading' ? 0.035 : 0.008 }, learnRecipe: learn ? 'fruit_compote' : null }, { topic });
+          { activity: action, topic, interests: { [topic]: 0.035, reading: topic === 'reading' ? 0.035 : 0.008 }, learnRecipe: learn }, { topic });
       }
       if (action === 'hobby') {
         const topic = topicChoice();
@@ -174,43 +183,8 @@
         return event(at, action, `enjoy_${topic}`, texts[topic], 0.4,
           { activity: action, topic, interests: { [topic]: 0.028 } }, { topic });
       }
-      if (action === 'cooking') {
-        const adventure = rng() < world.character.personality.adventurousness * 0.16;
-        const plans = world.knownRecipes.map(id => L.planRecipe(world, id, adventure));
-        const usable = plans.filter(p => !p.missing.length);
-        if (!usable.length) {
-          const plan = plans.sort((a, b) => a.missing.length - b.missing.length)[0];
-          return event(at, 'planning', 'plan_shopping', '料理を考えたけれど食材が足りない。買い物メモを書いた。', 0.46,
-            { activity: 'rest', shopping: plan.missing }, { missingIngredients: plan.missing });
-        }
-        const plan = L.pick(usable.map(p => {
-          const stat = world.recipeStats[p.recipeId] || { success: 0, failure: 0 };
-          return { ...p, weight: (1 + Math.min(stat.success, 5) * 0.16) / (1 + stat.failure * 0.35) * (p.unusual ? 0.25 : 1) };
-        }), rng);
-        const recipe = L.recipes[plan.recipeId];
-        const chance = L.clamp(0.93 - recipe.difficulty + Math.min(world.experience.cooking, 30) * 0.008 - (plan.unusual ? 0.23 : plan.substitutions.length * 0.035), 0.25, 0.96);
-        const success = rng() < chance, result = success ? (plan.unusual ? 'unusual' : 'success') : 'failure';
-        const inventory = {};
-        plan.used.forEach(item => { inventory[item.id] = (inventory[item.id] || 0) - item.quantity; });
-        const substitutionText = plan.substitutions.map(s => `${foodName(s.original)}の代わりに${foodName(s.replacement)}`).join('、');
-        const first = !world.recipeStats[plan.recipeId];
-        const text = `${first ? '初めて' : ''}${recipe.name}を作った。${substitutionText ? substitutionText + 'を使った。' : ''}${success ? (plan.unusual ? '不思議な味だけれど、意外と楽しめた。' : `${recipe.result}になって、おいしく食べた。`) : '味がまとまらず、次は作り方を見直そうと思った。'}`;
-        return event(at, action, `make_${plan.recipeId}`, text, plan.unusual ? 0.95 : first ? 0.85 : success ? 0.58 : 0.76,
-          { activity: action, inventory, cooking: { recipeId: plan.recipeId, success }, interests: { cooking: success ? 0.045 : -0.035 }, shopping: [] },
-          { recipeId: plan.recipeId, ingredientsUsed: plan.used, substitutions: plan.substitutions, result, successProbability: chance, firstAttempt: first });
-      }
-      if (action === 'shopping') {
-        let needs = world.pendingShopping;
-        if (!needs.length) {
-          const plan = world.knownRecipes.map(id => L.planRecipe(world, id)).sort((a, b) => a.missing.length - b.missing.length)[0];
-          needs = plan.missing.length ? plan.missing : ['pork', 'onion', 'apple'].filter(id => world.inventory[id] < 2);
-        }
-        const inventory = {};
-        for (const id of needs) if (world.inventory[id] < 4) inventory[id] = 4 - world.inventory[id];
-        const names = Object.keys(inventory).map(foodName).join('、');
-        return event(at, action, 'buy_ingredients', names ? `${names}を買って、冷蔵庫にしまった。` : '買い物メモを確認した。食材はまだ十分あった。', 0.38,
-          { activity: action, inventory, shopping: [] }, { itemsBought: inventory });
-      }
+      if (action === 'cooking') return L.resolveCooking(world, at, rng);
+      if (action === 'shopping') return L.resolveShopping(world, at, rng);
       if (action === 'snack') {
         const ids = Object.keys(L.items).filter(id => L.items[id].type === 'snack' && world.inventory[id] > 0 && !world.reservedSnacks.includes(id));
         if (!ids.length) return event(at, 'rest', 'tea_break', '温かいお茶をいれて、のんびりした。', 0.2, { activity: 'rest' });
@@ -233,3 +207,4 @@
     }
   };
 })(globalThis);
+

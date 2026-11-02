@@ -2,7 +2,7 @@
 (function (root) {
   'use strict';
   const L = root.Life = root.Life || {};
-  L.VERSION = 1;
+  L.VERSION = 2;
   L.STORAGE_KEY = 'ai-life-companion.v1';
   L.LIMITS = { logs: 1800, diaries: 180, actions: 160 };
   L.STEP = 90 * 60 * 1000;
@@ -13,31 +13,26 @@
     const d = new Date(value);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
-  L.items = {
-    pork: { name: '豚肉', type: 'protein', taste: ['savory'], substitutes: ['protein'], emoji: '🥩' },
-    chicken: { name: '鶏肉', type: 'protein', taste: ['savory'], substitutes: ['protein'], emoji: '🍗' },
-    onion: { name: '玉ねぎ', type: 'vegetable', taste: ['sweet'], substitutes: ['vegetable'], emoji: '🧅' },
-    carrot: { name: 'にんじん', type: 'vegetable', taste: ['sweet'], substitutes: ['vegetable'], emoji: '🥕' },
-    pineapple: { name: 'パイナップル', type: 'fruit', taste: ['sweet', 'sour'], substitutes: ['fruit', 'sweetness', 'acidity'], emoji: '🍍' },
-    apple: { name: 'りんご', type: 'fruit', taste: ['sweet', 'sour'], substitutes: ['fruit', 'sweetness', 'acidity'], emoji: '🍎' },
-    lemon: { name: 'レモン', type: 'fruit', taste: ['sour'], substitutes: ['fruit', 'acidity'], emoji: '🍋' },
-    kouignAmann: { name: 'クイニーアマン', type: 'snack', taste: ['sweet', 'buttery'], substitutes: ['sweetness', 'starch'], emoji: '🥮' },
-    cookie: { name: 'クッキー', type: 'snack', taste: ['sweet'], substitutes: ['sweetness', 'starch'], emoji: '🍪' },
-    chocolate: { name: 'チョコレート', type: 'snack', taste: ['sweet', 'bitter'], substitutes: ['sweetness'], emoji: '🍫' }
-  };
+  L.items = { ...L.ingredients, ...L.snacks };
   Object.entries(L.items).forEach(([id, item]) => { item.id = id; });
-  L.recipes = {
-    sweet_sour_pork: { name: '酢豚', slots: [
-      { id: 'pork', role: 'protein', quantity: 1 }, { id: 'onion', role: 'vegetable', quantity: 1 },
-      { id: 'pineapple', role: 'fruit', quantity: 1 }
-    ], result: '甘酸っぱい酢豚', difficulty: 0.24 },
-    pork_saute: { name: 'ポークソテー', slots: [
-      { id: 'pork', role: 'protein', quantity: 1 }, { id: 'onion', role: 'vegetable', quantity: 1 }
-    ], result: '香ばしいソテー', difficulty: 0.14 },
-    fruit_compote: { name: 'フルーツコンポート', slots: [
-      { id: 'apple', role: 'fruit', quantity: 1 }, { id: 'lemon', role: 'acidity', quantity: 1 }
-    ], result: '果物のコンポート', difficulty: 0.17 }
+  L.validateCatalog = () => {
+    const uses = {};
+    if (Object.keys(L.ingredients).some(id => Object.hasOwn(L.snacks, id))) throw new Error('食材とおやつのIDが重複しています。');
+    for (const [id, recipe] of Object.entries(L.recipes)) {
+      if (!recipe.slots.length || !Number.isFinite(recipe.difficulty) || recipe.difficulty < 0 || recipe.difficulty > 1) throw new Error(`レシピ定義が不正です: ${id}`);
+      for (const slot of recipe.slots) {
+        if (!L.items[slot.id] || !slot.role || !Number.isInteger(slot.quantity) || slot.quantity < 1 || slot.quantity > 1000) throw new Error(`材料枠が不正です: ${id}`);
+        for (const tags of Object.values(slot.requires || {})) if (!Array.isArray(tags) || tags.some(tag => typeof tag !== 'string' || !tag)) throw new Error(`要求属性が不正です: ${id}`);
+        uses[slot.id] = (uses[slot.id] || 0) + 1;
+      }
+    }
+    for (const item of Object.values(L.items)) {
+      for (const key of ['taste', 'texture', 'methods', 'substitutes']) if (!Array.isArray(item[key]) || !item[key].length) throw new Error(`食材属性が不正です: ${item.name}`);
+    }
+    return uses;
   };
+  L.commonIngredients = () => Object.entries(L.validateCatalog()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  L.validateCatalog();
   L.topics = { cooking: '料理研究', reading: '読書', music: '音楽', gardening: '植物' };
   L.activities = {
     reading: { name: '本を読んでいる', place: 'desk', emoji: '📖' },
@@ -49,15 +44,16 @@
     sleeping: { name: 'すやすや眠っている', place: 'sofa', emoji: '💤' }
   };
   L.createWorld = (at = Date.now(), seed = 20261101) => ({
-    schemaVersion: L.VERSION,
+    schemaVersion: L.VERSION, catalogItems: Object.keys(L.items), catalogRecipes: Object.keys(L.recipes),
     character: {
       name: 'フミ', interests: { cooking: 0.5, reading: 0.6, music: 0.4, gardening: 0.2 },
       personality: { curiosity: 0.7, adventurousness: 0.5 },
       currentActivity: 'reading', currentDetail: '部屋で本を開いたところ。'
     },
     inventory: Object.fromEntries(Object.keys(L.items).map(id => [id, ({ pork: 2, onion: 3, kouignAmann: 1 })[id] || 0])),
-    knownRecipes: ['sweet_sour_pork', 'pork_saute'],
-    experience: { cooking: 0 }, outcomes: { success: 0, failure: 0 },
+    knownRecipes: Object.keys(L.recipes),
+    experience: { cooking: 0 }, outcomes: { success: 0, unusual: 0, failure: 0 },
+    menuPreference: { inventory: 0.7, desire: 0.3 }, substitutionMemory: {}, pendingMeal: null, shoppingQuantities: {}, recentMeals: [],
     recipeStats: {}, recentActions: [], pendingShopping: [], reservedSnacks: [],
     eventLog: [], diary: [], lastSimulatedAt: null, lastActionAt: null, nextActionAt: at,
     createdAt: at, rngState: (seed >>> 0) || 1, nextEventId: 1,
@@ -81,3 +77,4 @@
     return choices[choices.length - 1];
   };
 })(globalThis);
+

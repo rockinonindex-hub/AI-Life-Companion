@@ -44,22 +44,27 @@
     return { recipeId, used, substitutions, missing, shortages, unusual: substitutions.some(s => s.unusual),
       compatibility: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0 };
   };
+  // Apply the same variety rule to initial menus and shortage fallbacks.
+  L.menuVariety = (world, id) => {
+    const recent = world.recentMeals.slice(-4);
+    if (world.knownRecipes.length > 1 && recent.slice(-2).length === 2 && recent.slice(-2).every(x => x === id)) return 0;
+    return Math.pow(.25, recent.filter(x => x === id).length) * (recent[recent.length - 1] === id ? .1 : 1);
+  };
   L.selectMenu = (world, rng) => {
     if (world.pendingMeal) return { recipeId: world.pendingMeal, mode: 'pending', weights: [{ id: world.pendingMeal, weight: 1 }] };
     const mode = rng() < world.menuPreference.inventory ? 'inventory' : 'desire';
     const weights = world.knownRecipes.map(id => {
       const plan = L.planRecipe(world, id, false, true), count = L.recipes[id].slots.length;
-      const repeats = world.recentMeals.slice(-4).filter(x => x === id).length;
       const stat = world.recipeStats[id] || { success: 0, failure: 0 };
       const preference = mode === 'inventory' ? .05 + Math.pow((count - plan.missing.length) / count, 3) * 5 :
         (1 + Math.min(stat.success, 5) * .08) / (1 + Math.min(stat.failure, 5) * .12);
-      return { id, weight: preference * Math.pow(.25, repeats) };
+      return { id, weight: preference * L.menuVariety(world, id) };
     });
     return { recipeId: L.pick(weights, rng).id, mode, weights };
   };
   L.shortageOptions = (world, recipeId) => {
     const substitute = L.planRecipe(world, recipeId, true);
-    const alternatives = world.knownRecipes.filter(id => id !== recipeId).map(id => L.planRecipe(world, id, false, true)).filter(p => !p.missing.length);
+    const alternatives = world.knownRecipes.filter(id => id !== recipeId).map(id => L.planRecipe(world, id, false, true)).filter(p => !p.missing.length && L.menuVariety(world, p.recipeId) > 0);
     const options = [{ id: 'shopping', weight: 3 }];
     if (!substitute.missing.length) {
       const factor = Math.min(1, ...substitute.substitutions.map(s => s.learningFactor));
@@ -84,7 +89,7 @@
           { activity: 'rest', shopping: Object.keys(original.shortages), shoppingQuantities: original.shortages, pendingMeal: menu.recipeId },
           { menu, shortage, missingIngredients: original.missing });
       }
-      plan = chosen === 'substitute' ? choices.substitute : L.pick(choices.alternatives.map(p => ({ ...p, weight: Math.pow(.25, world.recentMeals.filter(id => id === p.recipeId).length) })), rng);
+      plan = chosen === 'substitute' ? choices.substitute : L.pick(choices.alternatives.map(p => ({ ...p, weight: L.menuVariety(world, p.recipeId) })), rng);
     }
     const recipe = L.recipes[plan.recipeId], evaluation = L.evaluateCooking(world, plan, rng), result = evaluation.result;
     const inventory = {};

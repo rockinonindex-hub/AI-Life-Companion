@@ -1,0 +1,13 @@
+'use strict';
+const {L,start}=require('./helpers.cjs');
+const assert=require('node:assert/strict');
+const w=L.createWorld(start);
+w.recentMeals=['pork_saute'];
+const weights=L.selectMenu(w,()=>0).weights;
+assert(weights.find(x=>x.id==='pork_saute').weight < weights.find(x=>x.id==='sweet_sour_pork').weight);
+w.recentMeals=['pork_saute','pork_saute'];
+for(let seed=1;seed<=1000;seed++) assert.notEqual(L.selectMenu(w,L.random(seed)).recipeId,'pork_saute');
+assert(!L.shortageOptions(w,'pancake').alternatives.some(p=>p.recipeId==='pork_saute'));
+w.pendingMeal='pork_saute';assert.equal(L.selectMenu(w,()=>0).recipeId,'pork_saute');
+w.pendingMeal=null;w.knownRecipes=['pork_saute'];assert.equal(L.selectMenu(w,()=>0).recipeId,'pork_saute');
+console.log('PASS menu variety: inventory bias, 1000 seeded choices, shortage fallback, pending meal, single recipe');
